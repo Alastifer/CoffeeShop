@@ -3,7 +3,7 @@
 <html>
   <head>
     <style>
-      BODY { font-family: verdana, arial; font-size: 11px; color: black; margin: 10px;}      
+      BODY { font-family: verdana, arial; font-size: 11px; color: black; margin: 10px;}
 
       TABLE { font-family: verdana, arial; font-size: 12px; margin: 0px; border: 0px;}
 
