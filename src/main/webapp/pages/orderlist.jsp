@@ -66,4 +66,3 @@
     <a href="/CoffeeShop/Index"><link>Вернуться в магазин</link></a>
   </body>
 </html>
-
