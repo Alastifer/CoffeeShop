@@ -16,7 +16,7 @@ public class ErrorHandlerController extends HttpServlet {
 
     private static final String ATTRIBUTE_SERVLET_ERROR_MESSAGE = "javax.servlet.error.message";
 
-    private static final String PAGE_ERROR = "errorPages/error.jsp";
+    private static final String PAGE_ERROR = "/errorPages/error.jsp";
 
     private static final String ERROR_MESSAGE_PAGE_NOT_FOUND = "404 : page not found";
 
