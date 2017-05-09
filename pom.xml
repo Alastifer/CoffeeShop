@@ -7,6 +7,50 @@
     <groupId>com.project.shop.coffee</groupId>
     <artifactId>shop.coffee</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
 
+
+    <properties>
+        <java.version>1.8</java.version>
+        <tomcat.version>8.5.3</tomcat.version>
+        <mysql.version>6.0.5</mysql.version>
+        <hibernate.version>5.2.10.Final</hibernate.version>
+    </properties>
+
+    <build>
+        <finalName>CoffeeShop</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>${tomcat.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
