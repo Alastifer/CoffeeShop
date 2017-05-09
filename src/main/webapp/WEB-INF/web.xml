@@ -6,7 +6,17 @@
          version="2.4">
 
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>/pages/index.jsp</welcome-file>
     </welcome-file-list>
+
+    <error-page>
+        <exception-type>java.io.IOException</exception-type>
+        <location>/ErrorHandler</location>
+    </error-page>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/ErrorHandler</location>
+    </error-page>
 
 </web-app>
