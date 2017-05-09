@@ -15,7 +15,7 @@
     </style>
   </head>
   <body>
-    <form name="coffeeform">
+    <form method="get" action="Order">
       <table cellspacing="0px" cellpadding="0px" border="0px" style="border: 1px #B0B0B0 solid">
         <tr style="background-color: #C0C0C7">
           <th/>
@@ -25,14 +25,14 @@
         </tr>
         <c:forEach var="coffee" items="${allCoffee}">
           <tr style="background-color: #F0F0F0">
-            <td><input type="checkbox" name="check"/></td>
+            <td><input type="checkbox" name="coffeeGrade_${coffee.id}"/></td>
             <td nowrap="true">${coffee.title}</td>
             <td nowrap="true">${coffee.cost} TGR</td>
-            <td align="right"><input class="field" type="text" size="5"/></td>
+            <td align="right"><input class="field" type="text" name="amountCoffeeGrade_${coffee.id}" size="5"/></td>
           </tr>
         </c:forEach>
         <tr style="background-color: #F0F0F0">
-            <td colspan="4" align="right"><input type="button" value="Заказать"/></td>
+            <td colspan="4" align="right"><input type="submit" value="Заказать"/></td>
         </tr>
       </table>
       <font color="red">*</font> - каждая третья чашка бесплатно.
