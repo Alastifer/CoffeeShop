@@ -25,7 +25,11 @@ public class OrderListController extends HttpServlet {
 
     private final static String ATTRIBUTE_COST_OF_ORDER = "costOfOrder";
 
+    private final static String ATTRIBUTE_ERROR_MESSAGE = "errorMessage";
+
     private final static String PAGE_OK = "/pages/orderlist.jsp";
+
+    private final static String PAGE_INCORRECT_VALUE = "/pages/coffeelist.jsp";
 
     private final static String PART_OF_PARAMETER_AMOUNT = "amountCoffeeGrade";
 
@@ -42,7 +46,6 @@ public class OrderListController extends HttpServlet {
 
         while (parameterNames.hasMoreElements()) {
             String parameterName = parameterNames.nextElement();
-
             if (parameterName.contains(PART_OF_PARAMETER_AMOUNT)) {
                 continue;
             }
@@ -51,25 +54,48 @@ public class OrderListController extends HttpServlet {
             Coffee coffee = DAOUtils.getCoffeeById(id);
 
             Integer amount = intValue(req.getParameter(PART_OF_PARAMETER_AMOUNT + SPLIT_STRING + id));
-            OrderElement orderElement = new OrderElement(coffee, amount);
+            if (isNull(amount)) {
+                redirectToErrorPage(req, resp, "Введено неверное значение");
+                return;
+            }
 
+            OrderElement orderElement = new OrderElement(coffee, amount);
             orderElements.add(orderElement);
+
             totalCostOfOrderElements += orderElement.getTotal();
         }
 
+        if (totalCostOfOrderElements == 0) {
+            redirectToErrorPage(req, resp, "Не выбрано ни одного сорта кофе");
+            return;
+        }
+
         costOfOrder = totalCostOfOrderElements + DELIVERY_COST;
-
         setAttributes(req, orderElements, totalCostOfOrderElements, costOfOrder);
-
         req.getRequestDispatcher(PAGE_OK).forward(req, resp);
+    }
+
+    private void redirectToErrorPage(HttpServletRequest req,
+                                     HttpServletResponse resp,
+                                     String errorMessage) throws ServletException, IOException {
+        req.setAttribute(ATTRIBUTE_ERROR_MESSAGE, errorMessage);
+        req.getRequestDispatcher(PAGE_INCORRECT_VALUE).forward(req, resp);
     }
 
     private Integer intValue(String value) throws IOException {
         try {
-            return Integer.valueOf(value);
+            return checkValue(Integer.valueOf(value));
         } catch (NumberFormatException e) {
-            throw new IOException("No coffee grade with id = " + value, e);
+            return null;
         }
+    }
+
+    private Integer checkValue(Integer value) {
+        return value < 1 ? null : value;
+    }
+
+    private boolean isNull(Integer value) {
+        return value == null;
     }
 
     private void setAttributes(HttpServletRequest req,
