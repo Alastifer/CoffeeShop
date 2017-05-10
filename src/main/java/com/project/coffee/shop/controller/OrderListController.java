@@ -59,10 +59,7 @@ public class OrderListController extends HttpServlet {
 
         costOfOrder = totalCostOfOrderElements + DELIVERY_COST;
 
-        req.setAttribute(ATTRIBUTE_ORDER_ELEMENTS, orderElements);
-        req.setAttribute(ATTRIBUTE_TOTAL_COST_OF_ORDER_ELEMENTS, totalCostOfOrderElements);
-        req.setAttribute(ATTRIBUTE_DELIVERY_COST, DELIVERY_COST);
-        req.setAttribute(ATTRIBUTE_COST_OF_ORDER, costOfOrder);
+        setAttributes(req, orderElements, totalCostOfOrderElements, costOfOrder);
 
         req.getRequestDispatcher(PAGE_OK).forward(req, resp);
     }
@@ -73,6 +70,16 @@ public class OrderListController extends HttpServlet {
         } catch (NumberFormatException e) {
             throw new IOException("No coffee grade with id = " + value, e);
         }
+    }
+
+    private void setAttributes(HttpServletRequest req,
+                               List<OrderElement> orderElements,
+                               Integer totalCostOfOrderElements,
+                               Integer costOfOrder) {
+        req.setAttribute(ATTRIBUTE_ORDER_ELEMENTS, orderElements);
+        req.setAttribute(ATTRIBUTE_TOTAL_COST_OF_ORDER_ELEMENTS, totalCostOfOrderElements);
+        req.setAttribute(ATTRIBUTE_DELIVERY_COST, DELIVERY_COST);
+        req.setAttribute(ATTRIBUTE_COST_OF_ORDER, costOfOrder);
     }
 
 }
