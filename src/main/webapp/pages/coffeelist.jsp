@@ -32,7 +32,8 @@
           </tr>
         </c:forEach>
         <tr style="background-color: #F0F0F0">
-            <td colspan="4" align="right"><input type="submit" value="Заказать"/></td>
+            <td colspan="3" >${errorMessage}</td>
+            <td align="right"><input type="submit" value="Заказать"/></td>
         </tr>
       </table>
       <font color="red">*</font> - каждая третья чашка бесплатно.
