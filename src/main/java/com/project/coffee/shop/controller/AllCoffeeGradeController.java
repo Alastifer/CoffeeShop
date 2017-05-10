@@ -21,7 +21,7 @@ public class AllCoffeeGradeController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Coffee> allCoffee = DAOUtils.getAllCoffee();
-        req.setAttribute(ATTRIBUTE_ALL_COFFEE, allCoffee);
+        req.getSession().setAttribute(ATTRIBUTE_ALL_COFFEE, allCoffee);
         req.getRequestDispatcher(PAGE_OK).forward(req, resp);
     }
 
