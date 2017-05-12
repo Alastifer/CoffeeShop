@@ -25,6 +25,8 @@ public class OrderListController extends HttpServlet {
 
     private final static String ATTRIBUTE_COST_OF_ORDER = "costOfOrder";
 
+    private final static String ATTRIBUTE_ORDER_ID = "orderId";
+
     private final static String ATTRIBUTE_ERROR_MESSAGE = "errorMessage";
 
     private final static String PAGE_OK = "/pages/orderlist.jsp";
@@ -43,6 +45,7 @@ public class OrderListController extends HttpServlet {
         Enumeration<String> parameterNames = req.getParameterNames();
         Integer totalCostOfOrderElements = 0;
         Integer costOfOrder;
+        Integer orderId = DAOUtils.getNextOrderId();
 
         while (parameterNames.hasMoreElements()) {
             String parameterName = parameterNames.nextElement();
@@ -59,10 +62,10 @@ public class OrderListController extends HttpServlet {
                 return;
             }
 
-            OrderElement orderElement = new OrderElement(coffee, amount);
+            OrderElement orderElement = new OrderElement(orderId, coffee, amount);
             orderElements.add(orderElement);
 
-            totalCostOfOrderElements += orderElement.getTotal();
+            totalCostOfOrderElements += orderElement.getTotalCost();
         }
 
         if (totalCostOfOrderElements == 0) {
@@ -70,9 +73,16 @@ public class OrderListController extends HttpServlet {
             return;
         }
 
+        setOrderElements(orderElements);
         costOfOrder = totalCostOfOrderElements + DELIVERY_COST;
-        setAttributes(req, orderElements, totalCostOfOrderElements, costOfOrder);
+        setAttributes(req, orderElements, totalCostOfOrderElements, costOfOrder, orderId);
         req.getRequestDispatcher(PAGE_OK).forward(req, resp);
+    }
+
+    private void setOrderElements(List<OrderElement> orderElements) throws IOException {
+        for (OrderElement orderElement : orderElements) {
+            DAOUtils.setOrderElement(orderElement);
+        }
     }
 
     private void redirectToErrorPage(HttpServletRequest req,
@@ -101,11 +111,13 @@ public class OrderListController extends HttpServlet {
     private void setAttributes(HttpServletRequest req,
                                List<OrderElement> orderElements,
                                Integer totalCostOfOrderElements,
-                               Integer costOfOrder) {
-        req.setAttribute(ATTRIBUTE_ORDER_ELEMENTS, orderElements);
-        req.setAttribute(ATTRIBUTE_TOTAL_COST_OF_ORDER_ELEMENTS, totalCostOfOrderElements);
-        req.setAttribute(ATTRIBUTE_DELIVERY_COST, DELIVERY_COST);
-        req.setAttribute(ATTRIBUTE_COST_OF_ORDER, costOfOrder);
+                               Integer costOfOrder,
+                               Integer orderId) {
+        req.getSession().setAttribute(ATTRIBUTE_ORDER_ELEMENTS, orderElements);
+        req.getSession().setAttribute(ATTRIBUTE_TOTAL_COST_OF_ORDER_ELEMENTS, totalCostOfOrderElements);
+        req.getSession().setAttribute(ATTRIBUTE_DELIVERY_COST, DELIVERY_COST);
+        req.getSession().setAttribute(ATTRIBUTE_COST_OF_ORDER, costOfOrder);
+        req.getSession().setAttribute(ATTRIBUTE_ORDER_ID, orderId);
     }
 
 }
