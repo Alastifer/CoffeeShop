@@ -11,5 +11,7 @@
         <property name="hibernate.connection.password">root</property>
 
         <mapping resource="entityHibernate/Coffee.hbm.xml"/>
+        <mapping resource="entityHibernate/OrderElement.hbm.xml"/>
+        <mapping resource="entityHibernate/Order.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>
