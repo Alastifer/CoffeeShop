@@ -15,22 +15,25 @@
     </style>
   </head>
   <body>
+    <form method="get" action="TakeOrder">
     <table cellspacing="0px" cellpadding="2px" border="0px" style="border: 1px #B0B0B0 solid">
       <tr style="background-color: #C0C0C7">
         <th colspan="2">Доставка</th>
       </tr>
       <tr style="background-color: #F0F0F0">
         <td><b>ФИО</b></td>
-        <td nowrap="true"><input class="field" type="text" size="30"/></td>
+        <td nowrap="true"><input name="customerFullName" class="field" type="text" size="30"/></td>
       </tr>
       <tr style="background-color: #F0F0F0">
         <td><b>Адрес</b></td>
-        <td nowrap="true"><input class="field" type="text" size="30"/></td>
+        <td nowrap="true"><input name="customerAddress" class="field" type="text" size="30"/></td>
       </tr>
       <tr style="background-color: #F0F0F0">
-        <td colspan="2" align="right"><input type="button"/></td>
+        <td>${errorMessage}</td>
+        <td align="right"><input type="submit" value="Заказать"/></td>
       </tr>
     </table>
+    </form>
     <br/>
     <table cellspacing="0px" cellpadding="2px" border="0px" style="border: 1px #B0B0B0 solid">
       <tr style="background-color: #C0C0C7">
@@ -44,8 +47,8 @@
         <tr style="background-color: #F0F0F0">
           <td nowrap="true">${orderElement.coffee.title}</td>
           <td nowrap="true">${orderElement.coffee.cost} TGR</td>
-          <td align="right">${orderElement.amount}</td>
-          <td><font color="red">${orderElement.total}</font> TGR</td>
+          <td align="right">${orderElement.amountOfCoffee}</td>
+          <td><font color="red">${orderElement.totalCost}</font> TGR</td>
         </tr>
       </c:forEach>
 
