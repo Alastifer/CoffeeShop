@@ -4,11 +4,11 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="com.project.coffee.shop.entity.Coffee" table="coffeeGrade">
+    <class name="com.project.coffee.shop.entity.Coffee" table="CoffeeGrades">
         <id name="id" column="id" type="int">
             <generator class="native"/>
         </id>
-        <property name="title" column="title" type="string"/>
-        <property name="cost" column="cost" type="int"/>
+        <property name="title" column="title" type="string" not-null="true"/>
+        <property name="cost" column="cost" type="int" not-null="true"/>
     </class>
 </hibernate-mapping>
