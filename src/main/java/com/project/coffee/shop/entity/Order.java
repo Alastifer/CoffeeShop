@@ -1,13 +1,25 @@
 package com.project.coffee.shop.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "Orders")
 public class Order {
 
+    @Id
+    @Column(name = "id")
     private int id;
 
+    @Column(name = "customer_full_name", nullable = false)
     private String customerFullName;
 
+    @Column(name = "customer_address", nullable = false)
     private String customerAddress;
 
+    @Column(name = "total_cost", nullable = false)
     private int totalCost;
 
     public Order() {

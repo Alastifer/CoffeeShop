@@ -1,15 +1,27 @@
 package com.project.coffee.shop.entity;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "OrderElements")
 public class OrderElement {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
+    @Column(name = "order_id", nullable = false)
     private int orderId;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "coffee_id", nullable = false)
     private Coffee coffee;
 
+    @Column(name = "amount_of_coffee", nullable = false)
     private int amountOfCoffee;
 
+    @Column(name = "total_cost", nullable = false)
     private int totalCost;
 
     public OrderElement() {

@@ -1,11 +1,20 @@
 package com.project.coffee.shop.entity;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "CoffeeGrades")
 public class Coffee {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
+    @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "cost", nullable = false)
     private int cost;
 
     public Coffee() {
