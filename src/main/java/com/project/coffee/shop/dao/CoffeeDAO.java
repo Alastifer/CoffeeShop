@@ -1,7 +1,6 @@
 package com.project.coffee.shop.dao;
 
-import com.project.coffee.shop.dao.exception.DAOException;
-import com.project.coffee.shop.dao.exception.NoSuchEntityException;
+import com.project.coffee.shop.dao.exception.ProblemWithDatabaseException;
 import com.project.coffee.shop.entity.Coffee;
 import com.project.coffee.shop.entity.Order;
 import com.project.coffee.shop.entity.OrderElement;
@@ -12,7 +11,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class CoffeeDAO implements DAO {
@@ -28,32 +26,26 @@ public class CoffeeDAO implements DAO {
     private final static Logger log = Logger.getRootLogger();
 
     @Override
-    public Coffee getCoffeeById(Integer id) throws DAOException, NoSuchEntityException {
+    public Coffee getCoffeeById(Integer id) throws ProblemWithDatabaseException {
         Transaction tx = null;
         try (Session session = SESSION_HIBERNATE.openSession()) {
             tx = session.beginTransaction();
             Coffee coffee = session.get(Coffee.class, id);
             tx.commit();
-
-            if (coffee == null) {
-                log.info(String.format("Entered coffee with id = %d. No such coffee in database", id));
-                throw new NoSuchEntityException("No coffee with id = " + id);
-            }
-
             return coffee;
         } catch (HibernateException e) {
             if (tx != null) {
                 tx.rollback();
             }
             log.error("Problem with database : ", e);
-            throw new DAOException("Problem with database", e);
+            throw new ProblemWithDatabaseException("Problem with database", e);
         }
     }
 
     @Override
-    public List<Coffee> getAllCoffee() throws DAOException {
+    public List<Coffee> getAllCoffee() throws ProblemWithDatabaseException {
         Transaction tx = null;
-        List<Coffee> coffeeList = null;
+        List<Coffee> coffeeList;
         try (Session session = SESSION_HIBERNATE.openSession()) {
             tx = session.beginTransaction();
             coffeeList = session.createQuery(QUERY_SELECT_ALL).list();
@@ -65,12 +57,12 @@ public class CoffeeDAO implements DAO {
                 tx.rollback();
             }
             log.error("Problem with database : ", e);
-            throw new DAOException("Problem with database", e);
+            throw new ProblemWithDatabaseException("Problem with database", e);
         }
     }
 
     @Override
-    public void setOrderElement(OrderElement orderElement) throws DAOException {
+    public void setOrderElement(OrderElement orderElement) throws ProblemWithDatabaseException {
         Transaction tx = null;
         try (Session session = SESSION_HIBERNATE.openSession()) {
             tx = session.beginTransaction();
@@ -81,12 +73,12 @@ public class CoffeeDAO implements DAO {
                 tx.rollback();
             }
             log.error("Problem with database : ", e);
-            throw new DAOException("Problem with database", e);
+            throw new ProblemWithDatabaseException("Problem with database", e);
         }
     }
 
     @Override
-    public void setOrder(Order order) throws DAOException {
+    public void setOrder(Order order) throws ProblemWithDatabaseException {
         Transaction tx = null;
         try (Session session = SESSION_HIBERNATE.openSession()) {
             tx = session.beginTransaction();
@@ -97,12 +89,12 @@ public class CoffeeDAO implements DAO {
                 tx.rollback();
             }
             log.error("Problem with database : ", e);
-            throw new DAOException("Problem with database", e);
+            throw new ProblemWithDatabaseException("Problem with database", e);
         }
     }
 
     @Override
-    public Integer getNextOrderId() throws DAOException {
+    public Integer getNextOrderId() throws ProblemWithDatabaseException {
         Transaction tx = null;
         try (Session session = SESSION_HIBERNATE.openSession()) {
             tx = session.beginTransaction();
@@ -117,7 +109,7 @@ public class CoffeeDAO implements DAO {
                 tx.rollback();
             }
             log.error("Problem with database : ", e);
-            throw new DAOException("Problem with database", e);
+            throw new ProblemWithDatabaseException("Problem with database", e);
         }
     }
 
