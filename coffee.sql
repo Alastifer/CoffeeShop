@@ -1,10 +1,14 @@
+DROP TABLE CoffeeGrades IF EXISTS;
+DROP TABLE OrderElements IF EXISTS;
+DROP TABLE Configurations IF EXISTS;
+DROP TABLE Orders IF EXISTS;
+
 CREATE TABLE CoffeeGrades (
 	id INT AUTO_INCREMENT,
 	title VARCHAR(100) NOT NULL,
 	cost INT NOT NULL,
 	PRIMARY KEY (id)
 );
-	
 
 CREATE TABLE OrderElements (
 	id INT AUTO_INCREMENT,
