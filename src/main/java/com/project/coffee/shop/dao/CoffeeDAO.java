@@ -5,6 +5,7 @@ import com.project.coffee.shop.dao.exception.NoSuchEntityException;
 import com.project.coffee.shop.entity.Coffee;
 import com.project.coffee.shop.entity.Order;
 import com.project.coffee.shop.entity.OrderElement;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -24,6 +25,8 @@ public class CoffeeDAO implements DAO {
 
     private final static SessionFactory SESSION_HIBERNATE = new Configuration().configure().buildSessionFactory();
 
+    private final static Logger log = Logger.getRootLogger();
+
     @Override
     public Coffee getCoffeeById(Integer id) throws DAOException, NoSuchEntityException {
         Transaction tx = null;
@@ -33,6 +36,7 @@ public class CoffeeDAO implements DAO {
             tx.commit();
 
             if (coffee == null) {
+                log.info(String.format("Entered coffee with id = %d. No such coffee in database", id));
                 throw new NoSuchEntityException("No coffee with id = " + id);
             }
 
@@ -41,7 +45,8 @@ public class CoffeeDAO implements DAO {
             if (tx != null) {
                 tx.rollback();
             }
-            throw new DAOException("Problem with database : " + e.getMessage() + '\n' + Arrays.toString(e.getStackTrace()), e);
+            log.error("Problem with database : ", e);
+            throw new DAOException("Problem with database", e);
         }
     }
 
@@ -59,7 +64,8 @@ public class CoffeeDAO implements DAO {
             if (tx != null) {
                 tx.rollback();
             }
-            throw new DAOException("Problem with database : " + e.getMessage() + '\n' + Arrays.toString(e.getStackTrace()), e);
+            log.error("Problem with database : ", e);
+            throw new DAOException("Problem with database", e);
         }
     }
 
@@ -74,7 +80,8 @@ public class CoffeeDAO implements DAO {
             if (tx != null) {
                 tx.rollback();
             }
-            throw new DAOException("Problem with database : " + e.getMessage() + '\n' + Arrays.toString(e.getStackTrace()), e);
+            log.error("Problem with database : ", e);
+            throw new DAOException("Problem with database", e);
         }
     }
 
@@ -89,7 +96,8 @@ public class CoffeeDAO implements DAO {
             if (tx != null) {
                 tx.rollback();
             }
-            throw new DAOException("Problem with database : " + e.getMessage() + '\n' + Arrays.toString(e.getStackTrace()), e);
+            log.error("Problem with database : ", e);
+            throw new DAOException("Problem with database", e);
         }
     }
 
@@ -108,7 +116,8 @@ public class CoffeeDAO implements DAO {
             if (tx != null) {
                 tx.rollback();
             }
-            throw new DAOException("Problem with database : " + e.getMessage() + '\n' + Arrays.toString(e.getStackTrace()), e);
+            log.error("Problem with database : ", e);
+            throw new DAOException("Problem with database", e);
         }
     }
 
