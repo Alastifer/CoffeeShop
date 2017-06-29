@@ -1,8 +1,7 @@
 package com.project.coffee.shop.utils;
 
 import com.project.coffee.shop.dao.CoffeeDAO;
-import com.project.coffee.shop.dao.exception.DAOException;
-import com.project.coffee.shop.dao.exception.NoSuchEntityException;
+import com.project.coffee.shop.dao.exception.ProblemWithDatabaseException;
 import com.project.coffee.shop.entity.Coffee;
 import com.project.coffee.shop.entity.Order;
 import com.project.coffee.shop.entity.OrderElement;
@@ -17,40 +16,40 @@ public class DAOUtils {
     public static Coffee getCoffeeById(Integer id) throws IOException {
         try {
             return DAO.getCoffeeById(id);
-        } catch (DAOException | NoSuchEntityException e) {
-            throw new IOException(e.getMessage(), e);
+        } catch (ProblemWithDatabaseException e) {
+            throw new IOException("Problems with the database! Please try again later", e);
         }
     }
 
     public static List<Coffee> getAllCoffee() throws IOException {
         try {
             return DAO.getAllCoffee();
-        } catch (DAOException e) {
-            throw new IOException(e.getMessage(), e);
+        } catch (ProblemWithDatabaseException e) {
+            throw new IOException("Problems with the database! Please try again later", e);
         }
     }
 
     public static void setOrderElement(OrderElement orderElement) throws IOException {
         try {
             DAO.setOrderElement(orderElement);
-        } catch (DAOException e) {
-            throw new IOException(e.getMessage(), e);
+        } catch (ProblemWithDatabaseException e) {
+            throw new IOException("Problems with the database! Please try again later", e);
         }
     }
 
     public static void setOrder(Order order) throws IOException {
         try {
             DAO.setOrder(order);
-        } catch (DAOException e) {
-            throw new IOException(e.getMessage(), e);
+        } catch (ProblemWithDatabaseException e) {
+            throw new IOException("Problems with the database! Please try again later", e);
         }
     }
 
     public static Integer getNextOrderId() throws IOException {
         try {
             return DAO.getNextOrderId();
-        } catch (DAOException e) {
-            throw new IOException(e.getMessage(), e);
+        } catch (ProblemWithDatabaseException e) {
+            throw new IOException("Problems with the database! Please try again later", e);
         }
     }
 
