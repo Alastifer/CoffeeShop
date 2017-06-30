@@ -46,23 +46,23 @@
       <c:forEach var="orderElement" items="${orderElements}">
         <tr style="background-color: #F0F0F0">
           <td nowrap="true">${orderElement.coffee.title}</td>
-          <td nowrap="true">${orderElement.coffee.cost} TGR</td>
+          <td nowrap="true">${orderElement.coffee.cost} RU</td>
           <td align="right">${orderElement.amountOfCoffee}</td>
-          <td><font color="red">${orderElement.totalCost}</font> TGR</td>
+          <td><font color="red">${orderElement.totalCost}</font> RU</td>
         </tr>
       </c:forEach>
 
       <tr style="background-color: #E0E0E0">
         <td colspan="3" align="right"><b>Сумма:</b></td>
-        <td align="right">${totalCostOfOrderElements} TGR</td>
+        <td align="right">${totalCostOfOrderElements} RU</td>
       </tr>
       <tr style="background-color: #F0F0F0">
         <td colspan="3" align="right"><b>Доставка:</b></td>
-        <td align="right">${deliveryCost} TGR</td>
+        <td align="right">${deliveryCost} RU</td>
       </tr>
       <tr style="background-color: #E0E0E0">
         <td colspan="3" align="right"><b>Всего:</b></td>
-        <td align="right">${costOfOrder} TGR</td>
+        <td align="right">${costOfOrder} RU</td>
       </tr>
     </table>
     <br/>

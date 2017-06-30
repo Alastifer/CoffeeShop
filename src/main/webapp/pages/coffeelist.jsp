@@ -27,7 +27,7 @@
           <tr style="background-color: #F0F0F0">
             <td><input type="checkbox" name="coffeeGrade_${coffee.id}"/></td>
             <td nowrap="true">${coffee.title}</td>
-            <td nowrap="true">${coffee.cost} TGR</td>
+            <td nowrap="true">${coffee.cost} RU</td>
             <td align="right"><input class="field" type="text" name="amountCoffeeGrade_${coffee.id}" size="5"/></td>
           </tr>
         </c:forEach>
