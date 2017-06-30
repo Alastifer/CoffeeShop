@@ -1,0 +1,10 @@
+INSERT INTO CoffeeGrades VALUE (1, 'Эспрессо', 95);
+INSERT INTO CoffeeGrades VALUE (2, 'Эспрессо маккиато', 130);
+INSERT INTO CoffeeGrades VALUE (3, 'Американо', 125);
+INSERT INTO CoffeeGrades VALUE (4, 'Черри Микс', 250);
+INSERT INTO CoffeeGrades VALUE (5, 'Сливочный Латте с кокосом', 250);
+INSERT INTO CoffeeGrades VALUE (6, 'Кофе Латте', 155);
+INSERT INTO CoffeeGrades VALUE (7, 'Черный моккачино', 195);
+INSERT INTO CoffeeGrades VALUE (8, 'Белый моккачино', 195);
+INSERT INTO CoffeeGrades VALUE (9, 'Бариста кофе', 205);
+INSERT INTO CoffeeGrades VALUE (10, 'Айриш крим кофе', 250);
