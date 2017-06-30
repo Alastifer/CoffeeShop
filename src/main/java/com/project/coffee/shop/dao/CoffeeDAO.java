@@ -21,7 +21,7 @@ public class CoffeeDAO implements DAO {
 
     private final static String QUERY_INCREMENT_ORDER_ID = "UPDATE Configurations SET order_id=";
 
-    private final static SessionFactory SESSION_HIBERNATE = new Configuration().configure("DB/hibernate.cfg.xml").buildSessionFactory();
+    private final static SessionFactory SESSION_HIBERNATE = new Configuration().configure().buildSessionFactory();
 
     private final static Logger log = Logger.getRootLogger();
 
