@@ -66,7 +66,7 @@ public class DAOUtils {
     }
 
     /**
-     * Saves order information to the database
+     * Saves order information to the database.
      *
      * @param order entity that represent one order
      * @throws IOException if exception is thrown from the DAO
@@ -80,7 +80,7 @@ public class DAOUtils {
     }
 
     /**
-     * Returns the following identifier that used to save the order in the database
+     * Returns the following identifier that used to save the order in the database.
      *
      * @return next identifier for order
      * @throws IOException if exception is thrown from the DAO
