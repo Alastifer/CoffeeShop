@@ -14,29 +14,65 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Controller for entering contact information and order viewing.
+ */
 @WebServlet("/OrderList")
 public class OrderListController extends HttpServlet {
 
+    /**
+     * Name of attribute for all order elements.
+     */
     private final static String ATTRIBUTE_ORDER_ELEMENTS = "orderElements";
 
+    /**
+     * Name of attribute for price of all order elements.
+     */
     private final static String ATTRIBUTE_TOTAL_COST_OF_ORDER_ELEMENTS = "totalCostOfOrderElements";
 
+    /**
+     * Name of attribute for price of delivery.
+     */
     private final static String ATTRIBUTE_DELIVERY_COST = "deliveryCost";
 
+    /**
+     * Name of attribute for price of order.
+     */
     private final static String ATTRIBUTE_COST_OF_ORDER = "costOfOrder";
 
+    /**
+     * Name of attribute for order identifier.
+     */
     private final static String ATTRIBUTE_ORDER_ID = "orderId";
 
+    /**
+     * Name of attribute for error message.
+     */
     private final static String ATTRIBUTE_ERROR_MESSAGE = "errorMessage";
 
+    /**
+     * URL of next page.
+     */
     private final static String PAGE_OK = "/pages/orderlist.jsp";
 
+    /**
+     * URL of page if entered incorrect values.
+     */
     private final static String PAGE_INCORRECT_VALUE = "/pages/coffeelist.jsp";
 
+    /**
+     * Part of parameter name amountCoffeeGrade_[number of coffee].
+     */
     private final static String PART_OF_PARAMETER_AMOUNT = "amountCoffeeGrade";
 
+    /**
+     * Delimiter between part of parameter name amountCoffeeGrade_[number of coffee].
+     */
     private final static String SPLIT_STRING = "_";
 
+    /**
+     * Delivery cost.
+     */
     private final static int DELIVERY_COST = 5;
 
     @Override
@@ -79,12 +115,27 @@ public class OrderListController extends HttpServlet {
         req.getRequestDispatcher(PAGE_OK).forward(req, resp);
     }
 
+    /**
+     * Saves all order elements in database.
+     *
+     * @param orderElements list of order elements
+     * @throws IOException if an exception was thrown out of DAO
+     */
     private void setOrderElements(List<OrderElement> orderElements) throws IOException {
         for (OrderElement orderElement : orderElements) {
             DAOUtils.setOrderElement(orderElement);
         }
     }
 
+    /**
+     * Redirect to error page.
+     *
+     * @param req request
+     * @param resp response
+     * @param errorMessage error message
+     * @throws ServletException exception of HttpServlet
+     * @throws IOException exception of HttpServlet
+     */
     private void redirectToErrorPage(HttpServletRequest req,
                                      HttpServletResponse resp,
                                      String errorMessage) throws ServletException, IOException {
@@ -92,6 +143,14 @@ public class OrderListController extends HttpServlet {
         req.getRequestDispatcher(PAGE_INCORRECT_VALUE).forward(req, resp);
     }
 
+    /**
+     * Returns integer if string is valid integer value.
+     * Else returns null.
+     *
+     * @param value string with numbers
+     * @return integer value or null
+     * @throws IOException if was thrown NumberFormatException
+     */
     private Integer intValue(String value) throws IOException {
         try {
             return checkValue(Integer.valueOf(value));
@@ -100,14 +159,35 @@ public class OrderListController extends HttpServlet {
         }
     }
 
+    /**
+     * Checks integer value. Returns value if valid and null if invalid value.
+     *
+     * @param value number
+     * @return value or null
+     */
     private Integer checkValue(Integer value) {
         return value < 1 ? null : value;
     }
 
+    /**
+     * Zero check.
+     *
+     * @param value integer value
+     * @return true/false (null/not null)
+     */
     private boolean isNull(Integer value) {
         return value == null;
     }
 
+    /**
+     * Sets attributes in session.
+     *
+     * @param req request for set attributes
+     * @param orderElements list of all order elements
+     * @param totalCostOfOrderElements price of all order elements
+     * @param costOfOrder price of order
+     * @param orderId order identifier
+     */
     private void setAttributes(HttpServletRequest req,
                                List<OrderElement> orderElements,
                                Integer totalCostOfOrderElements,

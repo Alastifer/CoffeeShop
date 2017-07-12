@@ -11,11 +11,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Controller for home page of shop.
+ */
 @WebServlet("/Index")
 public class AllCoffeeGradeController extends HttpServlet {
 
+    /**
+     * Name of attribute for all coffee.
+     */
     private final static String ATTRIBUTE_ALL_COFFEE = "allCoffee";
 
+    /**
+     * URL of next page.
+     */
     private final static String PAGE_OK = "/pages/coffeelist.jsp";
 
     @Override
