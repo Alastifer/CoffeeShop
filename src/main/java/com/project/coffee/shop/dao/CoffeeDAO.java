@@ -13,19 +13,43 @@ import org.hibernate.cfg.Configuration;
 import javax.persistence.PersistenceException;
 import java.util.List;
 
+/**
+ * Implementation of DAO for shop.
+ */
 public class CoffeeDAO implements DAO {
 
+    /**
+     * Query to select all elements.
+     */
     private final static String QUERY_SELECT_ALL = "FROM Coffee";
 
+    /**
+     * Query to select order id.
+     */
     private final static String QUERY_SELECT_ORDER_ID = "SELECT order_id FROM Configurations";
 
+    /**
+     * Query to increment order id.
+     */
     private final static String QUERY_INCREMENT_ORDER_ID = "UPDATE Configurations SET order_id=";
 
+    /**
+     * Hibernate's session factory.
+     */
     private final static SessionFactory SESSION_HIBERNATE = new Configuration().configure().buildSessionFactory();
 
+    /**
+     * Logger.
+     */
     private final static Logger log = Logger.getRootLogger();
 
-    @Override
+    /**
+     * Returns information about coffee by identifier.
+     *
+     * @param id identifier of coffee
+     * @return information about coffee
+     * @throws ProblemWithDatabaseException problem with database
+     */
     public Coffee getCoffeeById(Integer id) throws ProblemWithDatabaseException {
         Transaction tx = null;
         Session session = SESSION_HIBERNATE.openSession();
@@ -49,7 +73,12 @@ public class CoffeeDAO implements DAO {
         }
     }
 
-    @Override
+    /**
+     * Returns all grades of coffee.
+     *
+     * @return list of coffee
+     * @throws ProblemWithDatabaseException problem with database
+     */
     public List<Coffee> getAllCoffee() throws ProblemWithDatabaseException {
         Transaction tx = null;
         Session session = SESSION_HIBERNATE.openSession();
@@ -74,7 +103,12 @@ public class CoffeeDAO implements DAO {
         }
     }
 
-    @Override
+    /**
+     * Saves order element in database.
+     *
+     * @param orderElement one order element
+     * @throws ProblemWithDatabaseException problem with database
+     */
     public void setOrderElement(OrderElement orderElement) throws ProblemWithDatabaseException {
         Transaction tx = null;
         Session session = SESSION_HIBERNATE.openSession();
@@ -97,7 +131,12 @@ public class CoffeeDAO implements DAO {
         }
     }
 
-    @Override
+    /**
+     * Saves order in database.
+     *
+     * @param order one order
+     * @throws ProblemWithDatabaseException problem with database
+     */
     public void setOrder(Order order) throws ProblemWithDatabaseException {
         Transaction tx = null;
         Session session = SESSION_HIBERNATE.openSession();
@@ -120,7 +159,12 @@ public class CoffeeDAO implements DAO {
         }
     }
 
-    @Override
+    /**
+     * Returns order id from configuration table.
+     *
+     * @return order id
+     * @throws ProblemWithDatabaseException problem with database
+     */
     public Integer getNextOrderId() throws ProblemWithDatabaseException {
         Transaction tx = null;
         Session session = SESSION_HIBERNATE.openSession();
