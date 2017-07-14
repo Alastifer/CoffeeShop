@@ -24,16 +24,6 @@ public class CoffeeDAO implements DAO {
     private final static String QUERY_SELECT_ALL = "FROM Coffee";
 
     /**
-     * Query to select order id.
-     */
-    private final static String QUERY_SELECT_ORDER_ID = "SELECT order_id FROM Configurations";
-
-    /**
-     * Query to increment order id.
-     */
-    private final static String QUERY_INCREMENT_ORDER_ID = "UPDATE Configurations SET order_id=";
-
-    /**
      * Hibernate's session factory.
      */
     private final static SessionFactory SESSION_HIBERNATE = new Configuration().configure().buildSessionFactory();
@@ -41,7 +31,7 @@ public class CoffeeDAO implements DAO {
     /**
      * Logger.
      */
-    private final static Logger log = Logger.getRootLogger();
+    private final static Logger log = Logger.getLogger(CoffeeDAO.class);
 
     /**
      * Returns information about coffee by identifier.
@@ -116,7 +106,7 @@ public class CoffeeDAO implements DAO {
         try {
             tx = session.beginTransaction();
 
-            session.save(orderElement);
+            session.saveOrUpdate(orderElement);
 
             tx.commit();
         } catch (PersistenceException e) {
@@ -147,36 +137,6 @@ public class CoffeeDAO implements DAO {
             session.save(order);
 
             tx.commit();
-        } catch (PersistenceException e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-
-            log.error("Problem with database : ", e);
-            throw new ProblemWithDatabaseException("Problem with database", e);
-        } finally {
-            session.close();
-        }
-    }
-
-    /**
-     * Returns order id from configuration table.
-     *
-     * @return order id
-     * @throws ProblemWithDatabaseException problem with database
-     */
-    public Integer getNextOrderId() throws ProblemWithDatabaseException {
-        Transaction tx = null;
-        Session session = SESSION_HIBERNATE.openSession();
-
-        try {
-            tx = session.beginTransaction();
-
-            Integer nextId = (Integer) session.createNativeQuery(QUERY_SELECT_ORDER_ID).getSingleResult();
-            session.createNativeQuery(QUERY_INCREMENT_ORDER_ID + (nextId + 1)).executeUpdate();
-
-            tx.commit();
-            return nextId;
         } catch (PersistenceException e) {
             if (tx != null) {
                 tx.rollback();
