@@ -41,11 +41,6 @@ public class OrderListController extends HttpServlet {
     private final static String ATTRIBUTE_COST_OF_ORDER = "costOfOrder";
 
     /**
-     * Name of attribute for order identifier.
-     */
-    private final static String ATTRIBUTE_ORDER_ID = "orderId";
-
-    /**
      * Name of attribute for error message.
      */
     private final static String ATTRIBUTE_ERROR_MESSAGE = "errorMessage";
@@ -81,7 +76,6 @@ public class OrderListController extends HttpServlet {
         Enumeration<String> parameterNames = req.getParameterNames();
         Integer totalCostOfOrderElements = 0;
         Integer costOfOrder;
-        Integer orderId = DAOUtils.getNextOrderId();
 
         while (parameterNames.hasMoreElements()) {
             String parameterName = parameterNames.nextElement();
@@ -98,7 +92,7 @@ public class OrderListController extends HttpServlet {
                 return;
             }
 
-            OrderElement orderElement = new OrderElement(orderId, coffee, amount);
+            OrderElement orderElement = new OrderElement(coffee, amount);
             orderElements.add(orderElement);
 
             totalCostOfOrderElements += orderElement.getTotalCost();
@@ -111,7 +105,7 @@ public class OrderListController extends HttpServlet {
 
         setOrderElements(orderElements);
         costOfOrder = totalCostOfOrderElements + DELIVERY_COST;
-        setAttributes(req, orderElements, totalCostOfOrderElements, costOfOrder, orderId);
+        setAttributes(req, orderElements, totalCostOfOrderElements, costOfOrder);
         req.getRequestDispatcher(PAGE_OK).forward(req, resp);
     }
 
@@ -186,18 +180,15 @@ public class OrderListController extends HttpServlet {
      * @param orderElements list of all order elements
      * @param totalCostOfOrderElements price of all order elements
      * @param costOfOrder price of order
-     * @param orderId order identifier
      */
     private void setAttributes(HttpServletRequest req,
                                List<OrderElement> orderElements,
                                Integer totalCostOfOrderElements,
-                               Integer costOfOrder,
-                               Integer orderId) {
+                               Integer costOfOrder) {
         req.getSession().setAttribute(ATTRIBUTE_ORDER_ELEMENTS, orderElements);
         req.getSession().setAttribute(ATTRIBUTE_TOTAL_COST_OF_ORDER_ELEMENTS, totalCostOfOrderElements);
         req.getSession().setAttribute(ATTRIBUTE_DELIVERY_COST, DELIVERY_COST);
         req.getSession().setAttribute(ATTRIBUTE_COST_OF_ORDER, costOfOrder);
-        req.getSession().setAttribute(ATTRIBUTE_ORDER_ID, orderId);
     }
 
 }
