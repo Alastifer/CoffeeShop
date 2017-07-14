@@ -45,12 +45,4 @@ public interface DAO {
      */
     void setOrder(Order order) throws ProblemWithDatabaseException;
 
-    /**
-     * Returns order id from configuration table.
-     *
-     * @return order id
-     * @throws ProblemWithDatabaseException problem with database
-     */
-    Integer getNextOrderId() throws ProblemWithDatabaseException;
-
 }
