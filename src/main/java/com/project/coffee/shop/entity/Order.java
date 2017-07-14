@@ -1,9 +1,6 @@
 package com.project.coffee.shop.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Represent of order. Contains name of the person who made the order, his address and price of order.
@@ -17,6 +14,7 @@ public class Order {
      * Unique identifier.
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
@@ -47,16 +45,13 @@ public class Order {
     /**
      * Constructs order.
      *
-     * @param id identifier of order
      * @param customerFullName name of person who made the order
      * @param customerAddress address of person who made the order
      * @param totalCost price of order
      */
-    public Order(int id,
-                 String customerFullName,
+    public Order(String customerFullName,
                  String customerAddress,
                  int totalCost) {
-        this.id = id;
         this.customerFullName = customerFullName;
         this.customerAddress = customerAddress;
         this.totalCost = totalCost;
