@@ -79,18 +79,4 @@ public class DAOUtils {
         }
     }
 
-    /**
-     * Returns the following identifier that used to save the order in the database.
-     *
-     * @return next identifier for order
-     * @throws IOException if exception is thrown from the DAO
-     */
-    public static Integer getNextOrderId() throws IOException {
-        try {
-            return DAO.getNextOrderId();
-        } catch (ProblemWithDatabaseException e) {
-            throw new IOException("Problems with the database! Please try again later", e);
-        }
-    }
-
 }
