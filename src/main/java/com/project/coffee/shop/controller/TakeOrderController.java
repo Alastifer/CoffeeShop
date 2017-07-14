@@ -1,6 +1,7 @@
 package com.project.coffee.shop.controller;
 
 import com.project.coffee.shop.entity.Order;
+import com.project.coffee.shop.entity.OrderElement;
 import com.project.coffee.shop.utils.DAOUtils;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Controller for accept order.
@@ -22,14 +24,14 @@ public class TakeOrderController extends HttpServlet {
     private final static String ATTRIBUTE_COST_OF_ORDER = "costOfOrder";
 
     /**
-     * Name of attribute for order identifier.
-     */
-    private final static String ATTRIBUTE_ORDER_ID = "orderId";
-
-    /**
      * Name of attribute for error message.
      */
     private final static String ATTRIBUTE_ERROR_MESSAGE = "errorMessage";
+
+    /**
+     * Name of attribute for all order elements.
+     */
+    private final static String ATTRIBUTE_ORDER_ELEMENTS = "orderElements";
 
     /**
      * Name of parameter for customer's full name.
@@ -53,7 +55,6 @@ public class TakeOrderController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Integer order_id = (Integer) req.getSession().getAttribute(ATTRIBUTE_ORDER_ID);
         Integer costOfOrder = (Integer) req.getSession().getAttribute(ATTRIBUTE_COST_OF_ORDER);
         String customerFullName = req.getParameter(PARAMETER_CUSTOMER_FULL_NAME);
         String customerAddress = req.getParameter(PARAMETER_CUSTOMER_ADDRESS);
@@ -63,8 +64,16 @@ public class TakeOrderController extends HttpServlet {
             return;
         }
 
-        Order order = new Order(order_id, customerFullName, customerAddress, costOfOrder);
+        Order order = new Order(customerFullName, customerAddress, costOfOrder);
         DAOUtils.setOrder(order);
+
+        Integer orderId = order.getId();
+        List<OrderElement> orderElements = (List<OrderElement>) req.getSession().getAttribute(ATTRIBUTE_ORDER_ELEMENTS);
+
+        for (OrderElement orderElement : orderElements) {
+            orderElement.setOrderId(orderId);
+            DAOUtils.setOrderElement(orderElement);
+        }
 
         req.getRequestDispatcher(PAGE_OK).forward(req, resp);
     }
