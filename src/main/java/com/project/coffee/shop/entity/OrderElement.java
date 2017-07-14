@@ -53,12 +53,10 @@ public class OrderElement {
     /**
      * Constructs order element.
      *
-     * @param orderId order identifier to which the element is bound
      * @param coffee information about grade of coffee
      * @param amountOfCoffee number of coffee
      */
-    public OrderElement(int orderId, Coffee coffee, int amountOfCoffee) {
-        this.orderId = orderId;
+    public OrderElement(Coffee coffee, int amountOfCoffee) {
         this.coffee = coffee;
         this.amountOfCoffee = amountOfCoffee;
         this.totalCost = coffee.getCost() * amountOfCoffee - (amountOfCoffee / 3 * coffee.getCost());
