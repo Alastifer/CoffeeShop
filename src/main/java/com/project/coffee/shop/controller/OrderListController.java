@@ -1,8 +1,11 @@
 package com.project.coffee.shop.controller;
 
+import com.project.coffee.shop.dao.CoffeeDAO;
+import com.project.coffee.shop.dao.DAO;
+import com.project.coffee.shop.dao.exception.ProblemWithDatabaseException;
 import com.project.coffee.shop.entity.Coffee;
 import com.project.coffee.shop.entity.OrderElement;
-import com.project.coffee.shop.utils.DAOUtils;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +16,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+
+import static com.project.coffee.shop.utils.LoggerUtils.getFullClassName;
 
 /**
  * Controller for entering contact information and order viewing.
@@ -51,6 +56,11 @@ public class OrderListController extends HttpServlet {
     private final static String PAGE_OK = "/pages/orderlist.jsp";
 
     /**
+     * URL of error page for problems with database.
+     */
+    private final static String PAGE_ERROR_WITH_DATABASE = "errorPages/errorInDatabase.jsp";
+
+    /**
      * URL of page if entered incorrect values.
      */
     private final static String PAGE_INCORRECT_VALUE = "/pages/coffeelist.jsp";
@@ -70,6 +80,16 @@ public class OrderListController extends HttpServlet {
      */
     private final static int DELIVERY_COST = 5;
 
+    /**
+     * Logger.
+     */
+    private final static Logger log = Logger.getLogger(getFullClassName());
+
+    /**
+     * Object for access to database.
+     */
+    private final static DAO dao = new CoffeeDAO();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<OrderElement> orderElements = new LinkedList<>();
@@ -84,11 +104,19 @@ public class OrderListController extends HttpServlet {
             }
 
             Integer id = intValue(parameterName.split(SPLIT_STRING)[1]);
-            Coffee coffee = DAOUtils.getCoffeeById(id);
+
+            Coffee coffee;
+            try {
+                coffee = dao.getCoffeeById(id);
+            } catch (ProblemWithDatabaseException e) {
+                resp.sendRedirect(PAGE_ERROR_WITH_DATABASE);
+                log.error("Problem with database when get by id", e);
+                return;
+            }
 
             Integer amount = intValue(req.getParameter(PART_OF_PARAMETER_AMOUNT + SPLIT_STRING + id));
             if (isNull(amount)) {
-                redirectToErrorPage(req, resp, "Введено неверное значение");
+                redirectToCurrentPageWithErrorMessage(req, resp, "Введено неверное значение");
                 return;
             }
 
@@ -99,11 +127,18 @@ public class OrderListController extends HttpServlet {
         }
 
         if (totalCostOfOrderElements == 0) {
-            redirectToErrorPage(req, resp, "Не выбрано ни одного сорта кофе");
+            redirectToCurrentPageWithErrorMessage(req, resp, "Не выбрано ни одного сорта кофе");
             return;
         }
 
-        setOrderElements(orderElements);
+        try {
+            setOrderElements(orderElements);
+        } catch (ProblemWithDatabaseException e) {
+            resp.sendRedirect(PAGE_ERROR_WITH_DATABASE);
+            log.error("Problem with database when set elements", e);
+            return;
+        }
+
         costOfOrder = totalCostOfOrderElements + DELIVERY_COST;
         setAttributes(req, orderElements, totalCostOfOrderElements, costOfOrder);
         req.getRequestDispatcher(PAGE_OK).forward(req, resp);
@@ -113,11 +148,11 @@ public class OrderListController extends HttpServlet {
      * Saves all order elements in database.
      *
      * @param orderElements list of order elements
-     * @throws IOException if an exception was thrown out of DAO
+     * @throws ProblemWithDatabaseException if an exception was thrown out from DAO
      */
-    private void setOrderElements(List<OrderElement> orderElements) throws IOException {
+    private void setOrderElements(List<OrderElement> orderElements) throws ProblemWithDatabaseException {
         for (OrderElement orderElement : orderElements) {
-            DAOUtils.setOrderElement(orderElement);
+            dao.setOrderElement(orderElement);
         }
     }
 
@@ -130,9 +165,9 @@ public class OrderListController extends HttpServlet {
      * @throws ServletException exception of HttpServlet
      * @throws IOException exception of HttpServlet
      */
-    private void redirectToErrorPage(HttpServletRequest req,
-                                     HttpServletResponse resp,
-                                     String errorMessage) throws ServletException, IOException {
+    private void redirectToCurrentPageWithErrorMessage(HttpServletRequest req,
+                                                       HttpServletResponse resp,
+                                                       String errorMessage) throws ServletException, IOException {
         req.setAttribute(ATTRIBUTE_ERROR_MESSAGE, errorMessage);
         req.getRequestDispatcher(PAGE_INCORRECT_VALUE).forward(req, resp);
     }
