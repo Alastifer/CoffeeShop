@@ -18,6 +18,8 @@
         <hibernate_annotations.version>3.2.0.Final</hibernate_annotations.version>
         <jstl.version>1.2</jstl.version>
         <log4j.version>1.2.12</log4j.version>
+        <junit.version>4.12</junit.version>
+        <hamcrest.vesion>1.3</hamcrest.vesion>
     </properties>
 
     <build>
@@ -72,6 +74,21 @@
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>${hamcrest.vesion}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>
