@@ -54,7 +54,7 @@
 
       <tr style="background-color: #E0E0E0">
         <td colspan="3" align="right"><b>Сумма:</b></td>
-        <td align="right">${totalCostOfOrderElements} RU</td>
+        <td align="right">${orderElementsCost} RU</td>
       </tr>
       <tr style="background-color: #F0F0F0">
         <td colspan="3" align="right"><b>Доставка:</b></td>
@@ -62,7 +62,7 @@
       </tr>
       <tr style="background-color: #E0E0E0">
         <td colspan="3" align="right"><b>Всего:</b></td>
-        <td align="right">${costOfOrder} RU</td>
+        <td align="right">${orderCost} RU</td>
       </tr>
     </table>
     <br/>

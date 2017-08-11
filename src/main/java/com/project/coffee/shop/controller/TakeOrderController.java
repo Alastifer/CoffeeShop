@@ -26,7 +26,7 @@ public class TakeOrderController extends HttpServlet {
     /**
      * Name of attribute for price of order.
      */
-    private final static String ATTRIBUTE_COST_OF_ORDER = "costOfOrder";
+    private final static String ATTRIBUTE_COST_OF_ORDER = "orderCost";
 
     /**
      * Name of attribute for error message.
@@ -75,7 +75,7 @@ public class TakeOrderController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Integer costOfOrder = (Integer) req.getSession().getAttribute(ATTRIBUTE_COST_OF_ORDER);
+        Integer orderCost = (Integer) req.getSession().getAttribute(ATTRIBUTE_COST_OF_ORDER);
         String customerFullName = req.getParameter(PARAMETER_CUSTOMER_FULL_NAME);
         String customerAddress = req.getParameter(PARAMETER_CUSTOMER_ADDRESS);
 
@@ -84,7 +84,7 @@ public class TakeOrderController extends HttpServlet {
             return;
         }
 
-        Order order = new Order(customerFullName, customerAddress, costOfOrder);
+        Order order = new Order(customerFullName, customerAddress, orderCost);
 
         try {
             dao.setOrder(order);

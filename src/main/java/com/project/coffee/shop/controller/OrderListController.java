@@ -33,7 +33,7 @@ public class OrderListController extends HttpServlet {
     /**
      * Name of attribute for price of all order elements.
      */
-    private final static String ATTRIBUTE_TOTAL_COST_OF_ORDER_ELEMENTS = "totalCostOfOrderElements";
+    private final static String ATTRIBUTE_ORDER_ELEMENTS_COST = "orderElementsCost";
 
     /**
      * Name of attribute for price of delivery.
@@ -43,7 +43,7 @@ public class OrderListController extends HttpServlet {
     /**
      * Name of attribute for price of order.
      */
-    private final static String ATTRIBUTE_COST_OF_ORDER = "costOfOrder";
+    private final static String ATTRIBUTE_COST_OF_ORDER = "orderCost";
 
     /**
      * Name of attribute for error message.
@@ -94,8 +94,8 @@ public class OrderListController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<OrderElement> orderElements = new LinkedList<>();
         Enumeration<String> parameterNames = req.getParameterNames();
-        Integer totalCostOfOrderElements = 0;
-        Integer costOfOrder;
+        Integer orderElementsCost = 0;
+        Integer orderCost;
 
         while (parameterNames.hasMoreElements()) {
             String parameterName = parameterNames.nextElement();
@@ -114,19 +114,19 @@ public class OrderListController extends HttpServlet {
                 return;
             }
 
-            Integer amount = intValue(req.getParameter(PART_OF_PARAMETER_AMOUNT + SPLIT_STRING + id));
-            if (isNull(amount)) {
-                redirectToCurrentPageWithErrorMessage(req, resp, "Введено неверное значение");
+            int coffeeCups = intValue(req.getParameter(PART_OF_PARAMETER_AMOUNT + SPLIT_STRING + id));
+            if (coffeeCups <= 0) {
+                redirectToCurrentPageWithErrorMessage(req, resp, "Введено некорректное значение");
                 return;
             }
 
-            OrderElement orderElement = new OrderElement(coffee, amount);
+            OrderElement orderElement = new OrderElement(coffee, coffeeCups);
             orderElements.add(orderElement);
 
-            totalCostOfOrderElements += orderElement.getTotalCost();
+            orderElementsCost += orderElement.getTotalCost();
         }
 
-        if (totalCostOfOrderElements == 0) {
+        if (orderElementsCost == 0) {
             redirectToCurrentPageWithErrorMessage(req, resp, "Не выбрано ни одного сорта кофе");
             return;
         }
@@ -139,8 +139,8 @@ public class OrderListController extends HttpServlet {
             return;
         }
 
-        costOfOrder = totalCostOfOrderElements + DELIVERY_COST;
-        setAttributes(req, orderElements, totalCostOfOrderElements, costOfOrder);
+        orderCost = orderElementsCost + DELIVERY_COST;
+        setAttributes(req, orderElements, orderElementsCost, orderCost);
         req.getRequestDispatcher(PAGE_OK).forward(req, resp);
     }
 
@@ -180,32 +180,12 @@ public class OrderListController extends HttpServlet {
      * @return integer value or null
      * @throws IOException if was thrown NumberFormatException
      */
-    private Integer intValue(String value) throws IOException {
+    private int intValue(String value) throws IOException {
         try {
-            return checkValue(Integer.valueOf(value));
+            return Integer.valueOf(value);
         } catch (NumberFormatException e) {
-            return null;
+            return 0;
         }
-    }
-
-    /**
-     * Checks integer value. Returns value if valid and null if invalid value.
-     *
-     * @param value number
-     * @return value or null
-     */
-    private Integer checkValue(Integer value) {
-        return value < 1 ? null : value;
-    }
-
-    /**
-     * Zero check.
-     *
-     * @param value integer value
-     * @return true/false (null/not null)
-     */
-    private boolean isNull(Integer value) {
-        return value == null;
     }
 
     /**
@@ -213,17 +193,17 @@ public class OrderListController extends HttpServlet {
      *
      * @param req request for set attributes
      * @param orderElements list of all order elements
-     * @param totalCostOfOrderElements price of all order elements
-     * @param costOfOrder price of order
+     * @param orderElementsCost price of all order elements
+     * @param orderCost price of order
      */
     private void setAttributes(HttpServletRequest req,
                                List<OrderElement> orderElements,
-                               Integer totalCostOfOrderElements,
-                               Integer costOfOrder) {
+                               Integer orderElementsCost,
+                               Integer orderCost) {
         req.getSession().setAttribute(ATTRIBUTE_ORDER_ELEMENTS, orderElements);
-        req.getSession().setAttribute(ATTRIBUTE_TOTAL_COST_OF_ORDER_ELEMENTS, totalCostOfOrderElements);
+        req.getSession().setAttribute(ATTRIBUTE_ORDER_ELEMENTS_COST, orderElementsCost);
         req.getSession().setAttribute(ATTRIBUTE_DELIVERY_COST, DELIVERY_COST);
-        req.getSession().setAttribute(ATTRIBUTE_COST_OF_ORDER, costOfOrder);
+        req.getSession().setAttribute(ATTRIBUTE_COST_OF_ORDER, orderCost);
     }
 
 }
