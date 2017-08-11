@@ -6,22 +6,24 @@ import com.project.coffee.shop.dao.exception.ProblemWithDatabaseException;
 import com.project.coffee.shop.entity.Order;
 import com.project.coffee.shop.entity.OrderElement;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 import static com.project.coffee.shop.utils.LoggerUtils.getFullClassName;
 
 /**
  * Controller for accept order.
  */
-@WebServlet("/TakeOrder")
-public class TakeOrderController extends HttpServlet {
+@Controller
+public class TakeOrderController {
 
     /**
      * Name of attribute for price of order.
@@ -51,17 +53,17 @@ public class TakeOrderController extends HttpServlet {
     /**
      * URL of page for incorrect address.
      */
-    private final static String PAGE_INCORRECT_ADDRESS = "/pages/orderlist.jsp";
+    private final static String PAGE_INCORRECT_ADDRESS = "orderlist";
 
     /**
      * URL of next page.
      */
-    private final static String PAGE_OK = "/pages/orderOK.html";
+    private final static String PAGE_OK = "takeorder";
 
     /**
      * URL of error page for problems with database.
      */
-    private final static String PAGE_ERROR_WITH_DATABASE = "errorPages/errorInDatabase.jsp";
+    private final static String PAGE_ERROR_IN_DATABASE = "errorInDatabase";
 
     /**
      * Logger.
@@ -73,43 +75,53 @@ public class TakeOrderController extends HttpServlet {
      */
     private final static DAO dao = new CoffeeDAO();
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Integer orderCost = (Integer) req.getSession().getAttribute(ATTRIBUTE_COST_OF_ORDER);
-        String customerFullName = req.getParameter(PARAMETER_CUSTOMER_FULL_NAME);
-        String customerAddress = req.getParameter(PARAMETER_CUSTOMER_ADDRESS);
+    /**
+     * Get request.
+     *
+     * @param params all parameters in url
+     * @param model model of response
+     * @param session HttpSession for get session's attributes
+     * @return url
+     * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
+     */
+    @RequestMapping(value = "/takeorder", method = RequestMethod.GET)
+    public String takeOrder(@RequestParam Map<String, String> params,
+                            ModelMap model,
+                            HttpSession session) throws ProblemWithDatabaseException {
+        Integer orderCost = (Integer) session.getAttribute(ATTRIBUTE_COST_OF_ORDER);
+        String customerFullName = params.get(PARAMETER_CUSTOMER_FULL_NAME);
+        String customerAddress = params.get(PARAMETER_CUSTOMER_ADDRESS);
 
         if (isEmptyAddress(customerAddress)) {
-            redirectToCurrentPageWithErrorMessage(req, resp, "Введите адрес доставки");
-            return;
+            model.addAttribute(ATTRIBUTE_ERROR_MESSAGE, "Введите адрес доставки");
+            return PAGE_INCORRECT_ADDRESS;
         }
 
         Order order = new Order(customerFullName, customerAddress, orderCost);
 
-        try {
-            dao.setOrder(order);
-        }  catch (ProblemWithDatabaseException e) {
-            resp.sendRedirect(PAGE_ERROR_WITH_DATABASE);
-            log.error("Problem with database when set in database", e);
-            return;
-        }
+        dao.setOrder(order);
 
         Integer orderId = order.getId();
-        List<OrderElement> orderElements = (List<OrderElement>) req.getSession().getAttribute(ATTRIBUTE_ORDER_ELEMENTS);
+        List<OrderElement> orderElements = (List<OrderElement>) session.getAttribute(ATTRIBUTE_ORDER_ELEMENTS);
 
         for (OrderElement orderElement : orderElements) {
             orderElement.setOrderId(orderId);
-
-            try {
-                dao.setOrderElement(orderElement);
-            } catch (ProblemWithDatabaseException e) {
-                resp.sendRedirect(PAGE_ERROR_WITH_DATABASE);
-                log.error("Problem with database when set in database", e);
-                return;
-            }
+            dao.setOrderElement(orderElement);
         }
 
-        req.getRequestDispatcher(PAGE_OK).forward(req, resp);
+        return PAGE_OK;
+    }
+
+    /**
+     * Handle ProblemWithDatabaseException.
+     *
+     * @param e exception
+     * @return url
+     */
+    @ExceptionHandler(ProblemWithDatabaseException.class)
+    public String handlerDAOError(Exception e) {
+        log.error("Problem with database", e);
+        return PAGE_ERROR_IN_DATABASE;
     }
 
     /**
@@ -119,22 +131,6 @@ public class TakeOrderController extends HttpServlet {
      */
     private boolean isEmptyAddress(String address) {
         return address.length() == 0;
-    }
-
-    /**
-     * Redirect to error page.
-     *
-     * @param req request
-     * @param resp response
-     * @param errorMessage error message
-     * @throws ServletException exception of HttpServlet
-     * @throws IOException exception of HttpServlet
-     */
-    private void redirectToCurrentPageWithErrorMessage(HttpServletRequest req,
-                                                       HttpServletResponse resp,
-                                                       String errorMessage) throws ServletException, IOException {
-        req.setAttribute(ATTRIBUTE_ERROR_MESSAGE, errorMessage);
-        req.getRequestDispatcher(PAGE_INCORRECT_ADDRESS).forward(req, resp);
     }
 
 }
