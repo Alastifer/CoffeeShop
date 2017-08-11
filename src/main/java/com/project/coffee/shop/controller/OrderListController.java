@@ -6,39 +6,27 @@ import com.project.coffee.shop.dao.exception.ProblemWithDatabaseException;
 import com.project.coffee.shop.entity.Coffee;
 import com.project.coffee.shop.entity.OrderElement;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Enumeration;
+import javax.servlet.http.HttpSession;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static com.project.coffee.shop.utils.LoggerUtils.getFullClassName;
 
 /**
  * Controller for entering contact information and order viewing.
  */
-@WebServlet("/OrderList")
-public class OrderListController extends HttpServlet {
+@Controller
+public class OrderListController {
 
     /**
      * Name of attribute for all order elements.
      */
     private final static String ATTRIBUTE_ORDER_ELEMENTS = "orderElements";
-
-    /**
-     * Name of attribute for price of all order elements.
-     */
-    private final static String ATTRIBUTE_ORDER_ELEMENTS_COST = "orderElementsCost";
-
-    /**
-     * Name of attribute for price of delivery.
-     */
-    private final static String ATTRIBUTE_DELIVERY_COST = "deliveryCost";
 
     /**
      * Name of attribute for price of order.
@@ -53,17 +41,17 @@ public class OrderListController extends HttpServlet {
     /**
      * URL of next page.
      */
-    private final static String PAGE_OK = "/pages/orderlist.jsp";
+    private final static String PAGE_OK = "orderlist";
 
     /**
      * URL of error page for problems with database.
      */
-    private final static String PAGE_ERROR_WITH_DATABASE = "errorPages/errorInDatabase.jsp";
+    private final static String PAGE_ERROR_IN_DATABASE = "errorInDatabase";
 
     /**
      * URL of page if entered incorrect values.
      */
-    private final static String PAGE_INCORRECT_VALUE = "/pages/coffeelist.jsp";
+    private final static String PAGE_INCORRECT_VALUE = "coffeelist";
 
     /**
      * Part of parameter name amountCoffeeGrade_[number of coffee].
@@ -90,34 +78,36 @@ public class OrderListController extends HttpServlet {
      */
     private final static DAO dao = new CoffeeDAO();
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    /**
+     * Get request.
+     *
+     * @param params all parameters in url
+     * @param model model of response
+     * @param session HttpSession for set session's attributes
+     * @return url
+     * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
+     */
+    @RequestMapping(value = "/orderlist", method = RequestMethod.GET)
+    public String viewOrderList(@RequestParam Map<String, String> params,
+                                ModelMap model,
+                                HttpSession session) throws ProblemWithDatabaseException {
         List<OrderElement> orderElements = new LinkedList<>();
-        Enumeration<String> parameterNames = req.getParameterNames();
         Integer orderElementsCost = 0;
         Integer orderCost;
 
-        while (parameterNames.hasMoreElements()) {
-            String parameterName = parameterNames.nextElement();
+        for (String parameterName : params.keySet()) {
             if (parameterName.contains(PART_OF_PARAMETER_AMOUNT)) {
                 continue;
             }
 
-            Integer id = intValue(parameterName.split(SPLIT_STRING)[1]);
+            Integer id = Integer.parseInt(parameterName.split(SPLIT_STRING)[1]);
 
-            Coffee coffee;
-            try {
-                coffee = dao.getCoffeeById(id);
-            } catch (ProblemWithDatabaseException e) {
-                resp.sendRedirect(PAGE_ERROR_WITH_DATABASE);
-                log.error("Problem with database when get by id", e);
-                return;
-            }
+            Coffee coffee = dao.getCoffeeById(id);
 
-            int coffeeCups = intValue(req.getParameter(PART_OF_PARAMETER_AMOUNT + SPLIT_STRING + id));
-            if (coffeeCups <= 0) {
-                redirectToCurrentPageWithErrorMessage(req, resp, "Введено некорректное значение");
-                return;
+            Integer coffeeCups = getIntegerValue(params.get(PART_OF_PARAMETER_AMOUNT + SPLIT_STRING + id));
+            if (coffeeCups == null || coffeeCups <= 0) {
+                model.addAttribute(ATTRIBUTE_ERROR_MESSAGE, "Введено некорректное значение");
+                return PAGE_INCORRECT_VALUE;
             }
 
             OrderElement orderElement = new OrderElement(coffee, coffeeCups);
@@ -127,21 +117,42 @@ public class OrderListController extends HttpServlet {
         }
 
         if (orderElementsCost == 0) {
-            redirectToCurrentPageWithErrorMessage(req, resp, "Не выбрано ни одного сорта кофе");
-            return;
-        }
-
-        try {
-            setOrderElements(orderElements);
-        } catch (ProblemWithDatabaseException e) {
-            resp.sendRedirect(PAGE_ERROR_WITH_DATABASE);
-            log.error("Problem with database when set elements", e);
-            return;
+            model.addAttribute(ATTRIBUTE_ERROR_MESSAGE, "Не выбрано ни одного сорта кофе");
+            return PAGE_INCORRECT_VALUE;
         }
 
         orderCost = orderElementsCost + DELIVERY_COST;
-        setAttributes(req, orderElements, orderElementsCost, orderCost);
-        req.getRequestDispatcher(PAGE_OK).forward(req, resp);
+
+        setOrderElements(orderElements);
+        setAttributesInSession(session, orderElements, orderCost);
+
+        return PAGE_OK;
+    }
+
+    /**
+     * Handle ProblemWithDatabaseException.
+     *
+     * @param e exception
+     * @return url
+     */
+    @ExceptionHandler(ProblemWithDatabaseException.class)
+    public String handlerDAOError(Exception e) {
+        log.error("Problem with database", e);
+        return PAGE_ERROR_IN_DATABASE;
+    }
+
+    /**
+     * Returns integer value of string.
+     *
+     * @param s number in string
+     * @return number or null if throw NumberFormatException
+     */
+    private Integer getIntegerValue(String s) {
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     /**
@@ -157,53 +168,17 @@ public class OrderListController extends HttpServlet {
     }
 
     /**
-     * Redirect to error page.
-     *
-     * @param req request
-     * @param resp response
-     * @param errorMessage error message
-     * @throws ServletException exception of HttpServlet
-     * @throws IOException exception of HttpServlet
-     */
-    private void redirectToCurrentPageWithErrorMessage(HttpServletRequest req,
-                                                       HttpServletResponse resp,
-                                                       String errorMessage) throws ServletException, IOException {
-        req.setAttribute(ATTRIBUTE_ERROR_MESSAGE, errorMessage);
-        req.getRequestDispatcher(PAGE_INCORRECT_VALUE).forward(req, resp);
-    }
-
-    /**
-     * Returns integer if string is valid integer value.
-     * Else returns null.
-     *
-     * @param value string with numbers
-     * @return integer value or null
-     * @throws IOException if was thrown NumberFormatException
-     */
-    private int intValue(String value) throws IOException {
-        try {
-            return Integer.valueOf(value);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    /**
      * Sets attributes in session.
      *
-     * @param req request for set attributes
+     * @param session model of order list
      * @param orderElements list of all order elements
-     * @param orderElementsCost price of all order elements
      * @param orderCost price of order
      */
-    private void setAttributes(HttpServletRequest req,
-                               List<OrderElement> orderElements,
-                               Integer orderElementsCost,
-                               Integer orderCost) {
-        req.getSession().setAttribute(ATTRIBUTE_ORDER_ELEMENTS, orderElements);
-        req.getSession().setAttribute(ATTRIBUTE_ORDER_ELEMENTS_COST, orderElementsCost);
-        req.getSession().setAttribute(ATTRIBUTE_DELIVERY_COST, DELIVERY_COST);
-        req.getSession().setAttribute(ATTRIBUTE_COST_OF_ORDER, orderCost);
+    private void setAttributesInSession(HttpSession session,
+                                        List<OrderElement> orderElements,
+                                        Integer orderCost) {
+        session.setAttribute(ATTRIBUTE_ORDER_ELEMENTS, orderElements);
+        session.setAttribute(ATTRIBUTE_COST_OF_ORDER, orderCost);
     }
 
 }
