@@ -5,13 +5,10 @@ import com.project.coffee.shop.dao.DAO;
 import com.project.coffee.shop.dao.exception.ProblemWithDatabaseException;
 import com.project.coffee.shop.entity.Coffee;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 import static com.project.coffee.shop.utils.LoggerUtils.getFullClassName;
@@ -19,8 +16,8 @@ import static com.project.coffee.shop.utils.LoggerUtils.getFullClassName;
 /**
  * Controller for home page of shop.
  */
-@WebServlet("/Index")
-public class AllCoffeeGradeController extends HttpServlet {
+@Controller
+public class AllCoffeeGradeController {
 
     /**
      * Name of attribute for all coffee.
@@ -30,12 +27,12 @@ public class AllCoffeeGradeController extends HttpServlet {
     /**
      * URL of next page.
      */
-    private final static String PAGE_OK = "/pages/coffeelist.jsp";
+    private final static String PAGE_OK = "coffeelist";
 
     /**
      * URL of error page for problems with database.
      */
-    private final static String PAGE_ERROR_WITH_DATABASE = "errorPages/errorInDatabase.jsp";
+    private final static String PAGE_ERROR_IN_DATABASE = "errorInDatabase";
 
     /**
      * Logger.
@@ -47,19 +44,30 @@ public class AllCoffeeGradeController extends HttpServlet {
      */
     private final static DAO dao = new CoffeeDAO();
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Coffee> allCoffee;
-        try {
-            allCoffee = dao.getAllCoffee();
-        } catch (ProblemWithDatabaseException e) {
-            resp.sendRedirect(PAGE_ERROR_WITH_DATABASE);
-            log.error("Problem with database when get all entity", e);
-            return;
-        }
+    /**
+     * Get request.
+     *
+     * @param model of order list
+     * @return url
+     * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
+     */
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String viewAllCoffee(ModelMap model) throws ProblemWithDatabaseException {
+        List<Coffee> allCoffee = dao.getAllCoffee();
+        model.addAttribute(ATTRIBUTE_ALL_COFFEE, allCoffee);
+        return PAGE_OK;
+    }
 
-        req.getSession().setAttribute(ATTRIBUTE_ALL_COFFEE, allCoffee);
-        req.getRequestDispatcher(PAGE_OK).forward(req, resp);
+    /**
+     * Handle ProblemWithDatabaseException.
+     *
+     * @param e exception
+     * @return url
+     */
+    @ExceptionHandler(ProblemWithDatabaseException.class)
+    public String handlerDAOError(Exception e) {
+        log.error("Problem with database", e);
+        return PAGE_ERROR_IN_DATABASE;
     }
 
 }
