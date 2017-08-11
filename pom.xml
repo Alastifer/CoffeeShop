@@ -20,10 +20,11 @@
         <log4j.version>1.2.12</log4j.version>
         <junit.version>4.12</junit.version>
         <hamcrest.vesion>1.3</hamcrest.vesion>
+        <springMVC.version>4.3.9.RELEASE</springMVC.version>
     </properties>
 
     <build>
-        <finalName>CoffeeShop</finalName>
+        <finalName>ROOT</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -89,6 +90,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${springMVC.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
