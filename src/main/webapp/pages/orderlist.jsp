@@ -15,7 +15,7 @@
     </style>
   </head>
   <body>
-    <form method="get" action="TakeOrder">
+    <form method="get" action="/takeorder">
     <table cellspacing="0px" cellpadding="2px" border="0px" style="border: 1px #B0B0B0 solid">
       <tr style="background-color: #C0C0C7">
         <th colspan="2">Доставка</th>
@@ -66,6 +66,6 @@
       </tr>
     </table>
     <br/>
-    <a href="/CoffeeShop/Index"><link>Вернуться в магазин</link></a>
+    <a href="/"><link>Вернуться в магазин</link></a>
   </body>
 </html>
