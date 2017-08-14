@@ -9,11 +9,11 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.project.coffee.shop.utils.LoggerUtils.getFullClassName;
 
@@ -51,7 +51,7 @@ public class OrderListController {
     /**
      * URL of page if entered incorrect values.
      */
-    private final static String PAGE_INCORRECT_VALUE = "coffeelist";
+    private final static String PAGE_INCORRECT_VALUE = "";
 
     /**
      * Part of parameter name amountCoffeeGrade_[number of coffee].
@@ -91,41 +91,18 @@ public class OrderListController {
     public String viewOrderList(@RequestParam Map<String, String> params,
                                 ModelMap model,
                                 HttpSession session) throws ProblemWithDatabaseException {
-        List<OrderElement> orderElements = new LinkedList<>();
-        Integer orderElementsCost = 0;
-        Integer orderCost;
+        Set<String> orderElementsTitle = getOrderElementsTitle(params);
+        List<OrderElement> orderElements = getOrderElements(orderElementsTitle, params);
+        int orderElementsCost = calculateOrderElementsCost(orderElements);
 
-        for (String parameterName : params.keySet()) {
-            if (parameterName.contains(PART_OF_PARAMETER_AMOUNT)) {
-                continue;
-            }
-
-            Integer id = Integer.parseInt(parameterName.split(SPLIT_STRING)[1]);
-
-            Coffee coffee = dao.getCoffeeById(id);
-
-            Integer coffeeCups = getIntegerValue(params.get(PART_OF_PARAMETER_AMOUNT + SPLIT_STRING + id));
-            if (coffeeCups == null || coffeeCups <= 0) {
-                model.addAttribute(ATTRIBUTE_ERROR_MESSAGE, "Введено некорректное значение");
-                return PAGE_INCORRECT_VALUE;
-            }
-
-            OrderElement orderElement = new OrderElement(coffee, coffeeCups);
-            orderElements.add(orderElement);
-
-            orderElementsCost += orderElement.getTotalCost();
-        }
-
-        if (orderElementsCost == 0) {
+        if (isCostZero(orderElementsCost)) {
             model.addAttribute(ATTRIBUTE_ERROR_MESSAGE, "Не выбрано ни одного сорта кофе");
-            return PAGE_INCORRECT_VALUE;
+            return "forward:/" + PAGE_INCORRECT_VALUE;
         }
 
-        orderCost = orderElementsCost + DELIVERY_COST;
-
-        setOrderElements(orderElements);
+        saveOrderElements(orderElements);
+        int orderCost = orderElementsCost + DELIVERY_COST;
         setAttributesInSession(session, orderElements, orderCost);
-
         return PAGE_OK;
     }
 
@@ -142,17 +119,85 @@ public class OrderListController {
     }
 
     /**
-     * Returns integer value of string.
+     * Handle NumberFormatException.
      *
-     * @param s number in string
-     * @return number or null if throw NumberFormatException
+     * @return model and view
      */
-    private Integer getIntegerValue(String s) {
-        try {
-            return Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-            return null;
+    @ExceptionHandler(NumberFormatException.class)
+    public ModelAndView handlerNumberFormat(Exception e) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject(ATTRIBUTE_ERROR_MESSAGE, "Введено некорректное значение");
+        modelAndView.setViewName("forward:/" + PAGE_INCORRECT_VALUE);
+        return modelAndView;
+    }
+
+    /**
+     * Check cost by zero.
+     *
+     * @param orderElementsCost total cost of all order elements
+     * @return true if cost is zero
+     */
+    private boolean isCostZero(Integer orderElementsCost) {
+        return orderElementsCost == 0;
+    }
+
+    /**
+     * Returns list of all order elements.
+     *
+     * @param orderElementsTitle set of order elements title
+     * @param params parameters in url
+     * @return list of order elements
+     * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
+     */
+    private List<OrderElement> getOrderElements(Set<String> orderElementsTitle, Map<String, String> params) throws ProblemWithDatabaseException {
+        List<OrderElement> orderElements = new ArrayList<>();
+
+        for (String element : orderElementsTitle) {
+            Integer id = Integer.parseInt(element.split(SPLIT_STRING)[1]);
+            Coffee coffee = dao.getCoffeeById(id);
+            Integer coffeeCups = Integer.parseInt(params.get(PART_OF_PARAMETER_AMOUNT + SPLIT_STRING + id));
+            checkNumberOfCups(coffeeCups);
+            orderElements.add(new OrderElement(coffee, coffeeCups));
         }
+
+        return orderElements;
+    }
+
+    /**
+     * Returns total cost of all order elements.
+     *
+     * @param orderElements list of order elements
+     * @return total cost of order elements
+     * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
+     */
+    private Integer calculateOrderElementsCost(List<OrderElement> orderElements) throws ProblemWithDatabaseException {
+        return orderElements.stream()
+                .mapToInt(OrderElement::getTotalCost)
+                .reduce(0, (left, right) -> left + right);
+    }
+
+    /**
+     * Check number of coffee's cups.
+     *
+     * @param coffeeCups number of cups
+     * @throws NumberFormatException throw if cups <= 0
+     */
+    private void checkNumberOfCups(Integer coffeeCups) throws NumberFormatException {
+        if (coffeeCups <= 0) {
+            throw new NumberFormatException();
+        }
+    }
+
+    /**
+     * Returns set of order elements title.
+     *
+     * @param params parameters in url
+     * @return set of order elements title
+     */
+    private Set<String> getOrderElementsTitle(Map<String, String> params) {
+        return params.keySet().stream()
+                .filter(s -> !s.contains(PART_OF_PARAMETER_AMOUNT))
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -161,7 +206,7 @@ public class OrderListController {
      * @param orderElements list of order elements
      * @throws ProblemWithDatabaseException if an exception was thrown out from DAO
      */
-    private void setOrderElements(List<OrderElement> orderElements) throws ProblemWithDatabaseException {
+    private void saveOrderElements(List<OrderElement> orderElements) throws ProblemWithDatabaseException {
         for (OrderElement orderElement : orderElements) {
             dao.setOrderElement(orderElement);
         }
