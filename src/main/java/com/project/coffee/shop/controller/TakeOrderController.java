@@ -88,7 +88,7 @@ public class TakeOrderController {
     public String takeOrder(@RequestParam Map<String, String> params,
                             ModelMap model,
                             HttpSession session) throws ProblemWithDatabaseException {
-        Integer orderCost = (Integer) session.getAttribute(ATTRIBUTE_COST_OF_ORDER);
+        int orderCost = (Integer) session.getAttribute(ATTRIBUTE_COST_OF_ORDER);
         String customerFullName = params.get(PARAMETER_CUSTOMER_FULL_NAME);
         String customerAddress = params.get(PARAMETER_CUSTOMER_ADDRESS);
 
@@ -98,16 +98,13 @@ public class TakeOrderController {
         }
 
         Order order = new Order(customerFullName, customerAddress, orderCost);
-
         dao.setOrder(order);
 
-        Integer orderId = order.getId();
+        int orderId = order.getId();
         List<OrderElement> orderElements = (List<OrderElement>) session.getAttribute(ATTRIBUTE_ORDER_ELEMENTS);
 
-        for (OrderElement orderElement : orderElements) {
-            orderElement.setOrderId(orderId);
-            dao.setOrderElement(orderElement);
-        }
+        setOrderIdInOrderElements(orderId, orderElements);
+        saveOrderElements(orderElements);
 
         return PAGE_OK;
     }
@@ -131,6 +128,28 @@ public class TakeOrderController {
      */
     private boolean isEmptyAddress(String address) {
         return address.length() == 0;
+    }
+
+    /**
+     * Set order id in all order elements.
+     *
+     * @param orderId order identifier
+     * @param orderElements list of order elements
+     */
+    private void setOrderIdInOrderElements(int orderId, List<OrderElement> orderElements) {
+        orderElements.forEach(element -> element.setId(orderId));
+    }
+
+    /**
+     * Save order elements in database.
+     *
+     * @param orderElements list of order elements
+     * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
+     */
+    private void saveOrderElements(List<OrderElement> orderElements) throws ProblemWithDatabaseException {
+        for (OrderElement element : orderElements) {
+            dao.setOrderElement(element);
+        }
     }
 
 }
