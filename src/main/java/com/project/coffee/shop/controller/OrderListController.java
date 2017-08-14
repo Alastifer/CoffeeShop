@@ -137,7 +137,7 @@ public class OrderListController {
      * @param orderElementsCost total cost of all order elements
      * @return true if cost is zero
      */
-    private boolean isCostZero(Integer orderElementsCost) {
+    private boolean isCostZero(int orderElementsCost) {
         return orderElementsCost == 0;
     }
 
@@ -153,9 +153,9 @@ public class OrderListController {
         List<OrderElement> orderElements = new ArrayList<>();
 
         for (String element : orderElementsTitle) {
-            Integer id = Integer.parseInt(element.split(SPLIT_STRING)[1]);
+            int id = Integer.parseInt(element.split(SPLIT_STRING)[1]);
             Coffee coffee = dao.getCoffeeById(id);
-            Integer coffeeCups = Integer.parseInt(params.get(PART_OF_PARAMETER_AMOUNT + SPLIT_STRING + id));
+            int coffeeCups = Integer.parseInt(params.get(PART_OF_PARAMETER_AMOUNT + SPLIT_STRING + id));
             checkNumberOfCups(coffeeCups);
             orderElements.add(new OrderElement(coffee, coffeeCups));
         }
@@ -170,7 +170,7 @@ public class OrderListController {
      * @return total cost of order elements
      * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
      */
-    private Integer calculateOrderElementsCost(List<OrderElement> orderElements) throws ProblemWithDatabaseException {
+    private int calculateOrderElementsCost(List<OrderElement> orderElements) throws ProblemWithDatabaseException {
         return orderElements.stream()
                 .mapToInt(OrderElement::getTotalCost)
                 .reduce(0, (left, right) -> left + right);
@@ -182,7 +182,7 @@ public class OrderListController {
      * @param coffeeCups number of cups
      * @throws NumberFormatException throw if cups <= 0
      */
-    private void checkNumberOfCups(Integer coffeeCups) throws NumberFormatException {
+    private void checkNumberOfCups(int coffeeCups) throws NumberFormatException {
         if (coffeeCups <= 0) {
             throw new NumberFormatException();
         }
@@ -221,7 +221,7 @@ public class OrderListController {
      */
     private void setAttributesInSession(HttpSession session,
                                         List<OrderElement> orderElements,
-                                        Integer orderCost) {
+                                        int orderCost) {
         session.setAttribute(ATTRIBUTE_ORDER_ELEMENTS, orderElements);
         session.setAttribute(ATTRIBUTE_COST_OF_ORDER, orderCost);
     }

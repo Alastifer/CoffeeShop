@@ -19,7 +19,7 @@ public interface DAO {
      * @return information about coffee
      * @throws ProblemWithDatabaseException problem with database
      */
-    Coffee getCoffeeById(Integer id) throws ProblemWithDatabaseException;
+    Coffee getCoffeeById(int id) throws ProblemWithDatabaseException;
 
     /**
      * Returns all grades of coffee.

@@ -40,7 +40,7 @@ public class CoffeeDAO implements DAO {
      * @return information about coffee
      * @throws ProblemWithDatabaseException problem with database
      */
-    public Coffee getCoffeeById(Integer id) throws ProblemWithDatabaseException {
+    public Coffee getCoffeeById(int id) throws ProblemWithDatabaseException {
         Transaction tx = null;
         Session session = SESSION_HIBERNATE.openSession();
 
