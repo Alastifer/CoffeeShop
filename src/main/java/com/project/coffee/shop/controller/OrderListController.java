@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.project.coffee.shop.utils.LoggerUtils.getFullClassName;
@@ -121,6 +124,7 @@ public class OrderListController {
     /**
      * Handle NumberFormatException.
      *
+     * @param e exception
      * @return model and view
      */
     @ExceptionHandler(NumberFormatException.class)
@@ -180,7 +184,7 @@ public class OrderListController {
      * Check number of coffee's cups.
      *
      * @param coffeeCups number of cups
-     * @throws NumberFormatException throw if cups <= 0
+     * @throws NumberFormatException throw if cups lower or equals 0
      */
     private void checkNumberOfCups(int coffeeCups) throws NumberFormatException {
         if (coffeeCups <= 0) {
