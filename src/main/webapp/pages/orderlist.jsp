@@ -15,7 +15,7 @@
     </style>
   </head>
   <body>
-    <form method="get" action="/takeorder">
+    <form method="POST" action="/takeorder">
     <table cellspacing="0px" cellpadding="2px" border="0px" style="border: 1px #B0B0B0 solid">
       <tr style="background-color: #C0C0C7">
         <th colspan="2">Доставка</th>
@@ -29,12 +29,14 @@
         <td nowrap="true"><input name="customerAddress" class="field" type="text" size="30"/></td>
       </tr>
       <tr style="background-color: #F0F0F0">
-        <td>${errorMessage}</td>
-        <td align="right"><input type="submit" value="Заказать"/></td>
+        <td colspan="2" align="right"><input type="submit" value="Заказать"/></td>
       </tr>
     </table>
+
+    <p>${errorMessage}</p>
+    <br>
+
     </form>
-    <br/>
     <table cellspacing="0px" cellpadding="2px" border="0px" style="border: 1px #B0B0B0 solid">
       <tr style="background-color: #C0C0C7">
         <th>Название</th>
