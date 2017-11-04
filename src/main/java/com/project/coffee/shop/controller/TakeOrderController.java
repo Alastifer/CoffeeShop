@@ -84,7 +84,7 @@ public class TakeOrderController {
      * @return url
      * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
      */
-    @RequestMapping(value = "/takeorder", method = RequestMethod.GET)
+    @RequestMapping(value = "/takeorder", method = RequestMethod.POST)
     public String takeOrder(@RequestParam Map<String, String> params,
                             ModelMap model,
                             HttpSession session) throws ProblemWithDatabaseException {

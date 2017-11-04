@@ -15,7 +15,7 @@
     </style>
   </head>
   <body>
-    <form method="get" action="/orderlist">
+    <form method="POST" action="/orderlist">
       <table cellspacing="0px" cellpadding="0px" border="0px" style="border: 1px #B0B0B0 solid">
         <tr style="background-color: #C0C0C7">
           <th/>

@@ -93,7 +93,7 @@ public class OrderListController {
      * @return url
      * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
      */
-    @RequestMapping(value = "/orderlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/orderlist", method = RequestMethod.POST)
     public String viewOrderList(@RequestParam Map<String, String> params,
                                 ModelMap model,
                                 HttpSession session) throws ProblemWithDatabaseException {
