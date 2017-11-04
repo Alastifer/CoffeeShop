@@ -53,7 +53,7 @@ public class AllCoffeeGradeController {
      * @return url
      * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.POST})
     public String viewAllCoffee(ModelMap model) throws ProblemWithDatabaseException {
         List<Coffee> allCoffee = dao.getAllCoffee();
         model.addAttribute(ATTRIBUTE_ALL_COFFEE, allCoffee);
