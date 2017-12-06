@@ -177,7 +177,7 @@ public class OrderListController {
      * @return total cost of order elements
      * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
      */
-    private int calculateOrderElementsCost(List<OrderElement> orderElements) throws ProblemWithDatabaseException {
+    private int calculateOrderElementsCost(List<OrderElement> orderElements) {
         return orderElements.stream()
                 .mapToInt(OrderElement::getTotalCost)
                 .reduce(0, (left, right) -> left + right);
