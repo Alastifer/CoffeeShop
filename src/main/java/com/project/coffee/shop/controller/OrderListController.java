@@ -175,7 +175,6 @@ public class OrderListController {
      *
      * @param orderElements list of order elements
      * @return total cost of order elements
-     * @throws ProblemWithDatabaseException problem with database such as no database created and etc.
      */
     private int calculateOrderElementsCost(List<OrderElement> orderElements) {
         return orderElements.stream()
